@@ -18,7 +18,8 @@ def clear(df):
     del df['fee']
     del df['info']
     del df['symbol']
-    del df['datetime']
+    #del df['timestamp']
+    #del df['datetime']
     del df['type']
     del df['order']
     df["id"] = df["id"] - df["id"].min()
