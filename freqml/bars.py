@@ -17,12 +17,16 @@ class bars:
     def dvolume(self):
         return self._df["cost"].sum()
 
+    @property
+    def period(self):
+        return self._df["cost"].sum()
+
     #@staticmethod
     def make_bars(grouped):
         df = grouped["price"].ohlc()
         df["amount"] = grouped["amount"].sum()
         df["VWAP"] = grouped["cost"].sum() / df["amount"]
-        df = df.set_index(grouped["timestamp"].nth(-1))
+        df = df.set_index(grouped["datetime"].nth(-1))
         return df
 
     def plot(self, title="bars", pair="PAIR"):
@@ -46,7 +50,13 @@ class bars:
                           xaxis_rangeslider_visible=True, xaxis_title="Time", yaxis_title=pair)
 
         fig.show()
-        del go
+
+
+    def TIMEB(self, freq="5m"):
+        grouped = self._df.groupby(pd.Grouper(key='datetime', freq=freq))
+        df_TIMEB = bars.make_bars(grouped)
+        return df_TIMEB
+
 
     def TB(self, m=100):
         if self._shape[0] % m != 0:
