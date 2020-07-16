@@ -82,18 +82,18 @@ class bars:
         return df_DB
 
     def TIB(self, theta=100):
+        b_border = 0
         self._df["b"] = (self._df.loc[1:, "price"] == self._df.loc[1:, "price"].shift())
         self._df["b"] = self._df["b"].apply(lambda x: 1 if x else -1)
         self._df.loc[:, "theta"] = self._df["b"].cumsum().abs()
         self._df.loc[:, "TIB_idx"] = 0
-        b_border = 0
-        while self._df.loc[b_border:, "theta"].eq(theta).any():
+        while self._df.loc[b_border:, "theta"].ge(theta).any():
             b_border = self._df.loc[b_border:, "theta"].eq(theta).idxmax()
             self._df.loc[b_border:, "TIB_idx"] += 1
             self._df.loc[b_border:, "theta"] -= theta
-            self._df.loc[b_border:, "theta"] = self._df["theta"].iloc[b_border:].abs()
+            self._df.loc[b_border:, "theta"] = self._df.loc[b_border:, "theta"].abs()
         grouped = self._df.groupby(self._df["TIB_idx"])
-        self._df = self._df.drop(["TIB_idx", "b", "theta"], axis=1, inplace=True)
+        self._df.drop(["TIB_idx", "b", "theta"], axis=1, inplace=True)
         df_TIB = bars.make_bars(grouped)
         return df_TIB
 
