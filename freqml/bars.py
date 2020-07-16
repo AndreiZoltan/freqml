@@ -64,8 +64,11 @@ class bars:
             period *= 86400
         grouped = self._df.groupby(np.floor(self._df["timestamp"]/period/1000))
         df_TIMEB = bars.make_bars(grouped)
+<<<<<<< HEAD
         df_TIMEB.drop(df_TIMEB.index[0], inplace=True)
         df_TIMEB.drop(df_TIMEB.index[-1], inplace=True)
+=======
+>>>>>>> 6857c7f... bugfix3
         return df_TIMEB
 
 
