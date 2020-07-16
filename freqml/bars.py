@@ -97,8 +97,21 @@ class bars:
         df_TIB = bars.make_bars(grouped)
         return df_TIB
 
-    def VIB(self):
-        pass
+    def VIB(self, theta=100):
+        b_border = 0
+        self._df["b"] = (self._df.loc[1:, "price"] == self._df.loc[1:, "price"].shift())
+        self._df.loc[:, "b"] = self._df.loc[:, "b"].apply(lambda x: 1 if x else -1)
+        self._df.loc[:, "theta"] = (self._df["b"] * self._df['amount']).cumsum().abs()
+        self._df.loc[:, "VIB_idx"] = 0
+        while self._df.loc[b_border:, "theta"].ge(theta).any():
+            b_border = self._df.loc[b_border:, "theta"].ge(theta).idxmax()
+            self._df.loc[b_border:, "VIB_idx"] += 1
+            self._df.loc[b_border:, "theta"] -= theta
+            self._df.loc[b_border:, "theta"] = self._df.loc[b_border:, "theta"].abs()
+        grouped = self._df.groupby(self._df["VIB_idx"])
+        self._df.drop(["VIB_idx", "b", "theta"], axis=1, inplace=True)
+        df_VIB = bars.make_bars(grouped)
+        return df_VIB
 
     def DIB(self):
         pass
