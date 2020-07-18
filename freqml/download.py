@@ -26,10 +26,10 @@ def clear(df):
 
 
 def load(curr1, curr2="USDT", exchange="binance", days="1"):
-    filepath = get_filepath(curr1, curr2, days, exchange)
+    filepath = get_filepath(curr1, curr2, str(days), exchange)
     if os.path.isfile(filepath) == True:
         os.remove(filepath)
-    command =   "cd " + freqml_path + "/freqtrade &&"\
+    command =   "cd " + freqml_path + "/freqtrade && "\
               + "freqtrade download-data"\
               + " --exchange " + exchange \
               + " --pairs " + curr1 + "/" + curr2 \
@@ -37,6 +37,7 @@ def load(curr1, curr2="USDT", exchange="binance", days="1"):
               + " --days " + str(days) \
               + " -v --erase --dl-trades"
     os.system(command)
+    print(command)
     os.system("gunzip " + filepath.split("--")[0] + ".json.gz")
     json2csv(filepath.split("--")[0] + ".json",
              filepath)

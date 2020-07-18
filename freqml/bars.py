@@ -19,7 +19,7 @@ class bars:
 
     @property
     def period(self):
-        return self._df["cost"].sum()
+        return self._df.loc[self._df.shape[0] - 1, "datetime"] - self._df.loc[0, "datetime"]
 
     #@staticmethod
     def make_bars(grouped):
@@ -82,26 +82,52 @@ class bars:
         return df_DB
 
     def TIB(self, theta=100):
+        b_border = 0
         self._df["b"] = (self._df.loc[1:, "price"] == self._df.loc[1:, "price"].shift())
         self._df["b"] = self._df["b"].apply(lambda x: 1 if x else -1)
         self._df.loc[:, "theta"] = self._df["b"].cumsum().abs()
         self._df.loc[:, "TIB_idx"] = 0
-        b_border = 0
-        while self._df.loc[b_border:, "theta"].eq(theta).any():
+        while self._df.loc[b_border:, "theta"].ge(theta).any():
             b_border = self._df.loc[b_border:, "theta"].eq(theta).idxmax()
             self._df.loc[b_border:, "TIB_idx"] += 1
             self._df.loc[b_border:, "theta"] -= theta
-            self._df.loc[b_border:, "theta"] = self._df["theta"].iloc[b_border:].abs()
+            self._df.loc[b_border:, "theta"] = self._df.loc[b_border:, "theta"].abs()
         grouped = self._df.groupby(self._df["TIB_idx"])
-        self._df = self._df.drop(["TIB_idx", "b", "theta"], axis=1, inplace=True)
+        self._df.drop(["TIB_idx", "b", "theta"], axis=1, inplace=True)
         df_TIB = bars.make_bars(grouped)
         return df_TIB
 
-    def VIB(self):
-        pass
+    def VIB(self, theta=100):
+        b_border = 0
+        self._df["b"] = (self._df.loc[1:, "price"] == self._df.loc[1:, "price"].shift())
+        self._df.loc[:, "b"] = self._df.loc[:, "b"].apply(lambda x: 1 if x else -1)
+        self._df.loc[:, "theta"] = (self._df["b"] * self._df['amount']).cumsum().abs()
+        self._df.loc[:, "VIB_idx"] = 0
+        while self._df.loc[b_border:, "theta"].ge(theta).any():
+            b_border = self._df.loc[b_border:, "theta"].ge(theta).idxmax()
+            self._df.loc[b_border:, "VIB_idx"] += 1
+            self._df.loc[b_border:, "theta"] -= theta
+            self._df.loc[b_border:, "theta"] = self._df.loc[b_border:, "theta"].abs()
+        grouped = self._df.groupby(self._df["VIB_idx"])
+        self._df.drop(["VIB_idx", "b", "theta"], axis=1, inplace=True)
+        df_VIB = bars.make_bars(grouped)
+        return df_VIB
 
-    def DIB(self):
-        pass
+    def DIB(self, theta=100):
+        b_border = 0
+        self._df["b"] = (self._df.loc[1:, "price"] == self._df.loc[1:, "price"].shift())
+        self._df.loc[:, "b"] = self._df.loc[:, "b"].apply(lambda x: 1 if x else -1)
+        self._df.loc[:, "theta"] = (self._df["b"] * self._df['cost']).cumsum().abs()
+        self._df.loc[:, "DIB_idx"] = 0
+        while self._df.loc[b_border:, "theta"].ge(theta).any():
+            b_border = self._df.loc[b_border:, "theta"].ge(theta).idxmax()
+            self._df.loc[b_border:, "DIB_idx"] += 1
+            self._df.loc[b_border:, "theta"] -= theta
+            self._df.loc[b_border:, "theta"] = self._df.loc[b_border:, "theta"].abs()
+        grouped = self._df.groupby(self._df["DIB_idx"])
+        self._df.drop(["DIB_idx", "b", "theta"], axis=1, inplace=True)
+        df_DIB = bars.make_bars(grouped)
+        return df_DIB
 
     def TRB(self):
         pass
