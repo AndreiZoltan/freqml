@@ -10,3 +10,9 @@ def CUSUM(df, threshold=0.04):
     neg_idx = neg.index[neg > 0]
     idx.union(neg_idx)
     return df.loc[idx, ["datetime"]].reset_index(drop=True)
+
+def get_volatility(df, span=100, time=1):
+    delta = df.index[-1] - pd.Timedelta(days=time)
+    df = df[df.index.tz_localize(None) > delta.to_datetime64()]
+    volatility = df["close"].ewm(span=span).std()
+    return volatility
