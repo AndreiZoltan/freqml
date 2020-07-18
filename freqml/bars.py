@@ -19,7 +19,7 @@ class bars:
 
     @property
     def period(self):
-        return self._df["cost"].sum()
+        return self._df.loc[self._df.shape[0] - 1, "datetime"] - self._df.loc[0, "datetime"]
 
     #@staticmethod
     def make_bars(grouped):

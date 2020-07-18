@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-def CUSUM(df, threshold):
+def CUSUM(df, threshold=0.04):
     eps = 1e-5
     diff = df["price"].diff()
     pos = diff.rolling(2).apply(lambda x: -eps if x.sum() > threshold else max(0, x.sum()), raw=True)
