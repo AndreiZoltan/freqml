@@ -1,3 +1,4 @@
+[![CodeFactor](https://www.codefactor.io/repository/github/andrewsultan/freqml/badge/master?s=a80aec3f2511c18cec45afbe37ad9e5bed0baa84)](https://www.codefactor.io/repository/github/andrewsultan/freqml/overview/master)
 # Quick start
 ```bash
 git clone --recurse-submodules https://github.com/AndrewSultan/freqml.git
