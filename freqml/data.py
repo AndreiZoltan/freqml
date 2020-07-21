@@ -62,7 +62,7 @@ def dataset_loader(client,
     name_csv = new_folder.split('/')[-1]
     filename = path_dir + '/' + name_csv + '.csv'
     if os.path.exists(filename) and override is False:
-        df = pd.read_csv(filename)
+        df = pd.read_csv(filename, index_col=0)
         return df
     if os.path.exists(new_folder):
         shutil.rmtree(new_folder)
