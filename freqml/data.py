@@ -62,7 +62,17 @@ def dataset_loader(client,
     name_csv = new_folder.split('/')[-1]
     filename = path_dir + '/' + name_csv + '.csv'
     if os.path.exists(filename) and override is False:
-        df = pd.read_csv(filename, index_col=0)
+        dtypes = {'id':'int',
+                  'price':'float',
+                  'amount':'float',
+                  'timestamp':'long',
+                  'datetime':'str',
+                  'side':'float',
+                  'cost':'float'}
+        df = pd.read_csv(filename,
+                         index_col=0,
+                         dtype=dtypes,
+                         parse_dates=['datetime'])
         return df
     if os.path.exists(new_folder):
         shutil.rmtree(new_folder)
