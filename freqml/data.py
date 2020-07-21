@@ -40,12 +40,11 @@ def clear(df):
 
 
 def dataset_maker(path, filename):
-    df = pd.DataFrame()
     files = os.listdir(path)
     files = sorted(files)
-    for file in files:
-        df_to_append = pd.read_csv(path + '/' + file, index_col=0)
-        df = df.append(df_to_append, ignore_index=True)
+    files = [str(path + '/' + f ) for f in files]
+    df = pd.concat((pd.read_csv(f, index_col=0) for f in files), ignore_index=True)
+    print("The data was loaded into RAM for further processing")
     df = df.dropna()
     df = clear(df)
     df.to_csv(filename)
@@ -62,13 +61,13 @@ def dataset_loader(client,
     name_csv = new_folder.split('/')[-1]
     filename = path_dir + '/' + name_csv + '.csv'
     if os.path.exists(filename) and override is False:
-        dtypes = {'id':'int',
-                  'price':'float',
-                  'amount':'float',
-                  'timestamp':'long',
-                  'datetime':'str',
-                  'side':'float',
-                  'cost':'float'}
+        dtypes = {'id': 'int',
+                  'price': 'float',
+                  'amount': 'float',
+                  'timestamp': 'long',
+                  'datetime': 'str',
+                  'side': 'float',
+                  'cost': 'float'}
         df = pd.read_csv(filename,
                          index_col=0,
                          dtype=dtypes,
@@ -93,6 +92,7 @@ def dataset_loader(client,
                 break
         else:
             start += step
+    print("All data was downloaded")
     df = dataset_maker(new_folder, filename)
     shutil.rmtree(new_folder)
     return df
