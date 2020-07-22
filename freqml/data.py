@@ -39,7 +39,7 @@ def clear(df):
     return df.reset_index(drop=True)
 
 
-def dataset_maker(path, filename):
+def make_dataset(path, filename):
     files = os.listdir(path)
     files = sorted(files)
     files = [str(path + '/' + f ) for f in files]
@@ -51,11 +51,11 @@ def dataset_maker(path, filename):
     return df
 
 
-def dataset_loader(client,
-                   pair='ETHUSDT',
-                   days=1,
-                   path='/home/zoltan/github/freqml/freqtrade/user_data/data/binance',
-                   override=False):
+def load_dataset(client,
+                 pair='ETHUSDT',
+                 days=1,
+                 path='/home/zoltan/github/freqml/freqtrade/user_data/data/binance',
+                 override=False):
     new_folder = path + '/' + pair + '_' + str(days)
     path_dir = "/".join(new_folder.split('/')[:-1])
     name_csv = new_folder.split('/')[-1]
@@ -93,6 +93,6 @@ def dataset_loader(client,
         else:
             start += step
     print("All data was downloaded")
-    df = dataset_maker(new_folder, filename)
+    df = make_dataset(new_folder, filename)
     shutil.rmtree(new_folder)
     return df
