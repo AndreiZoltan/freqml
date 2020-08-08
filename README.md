@@ -11,7 +11,5 @@ python3 -m pip install --upgrade pip
 pip install -e .
 pip install ipykernel
 ipython kernel install --user --name=freqml
-cd freqtrade
-git checkout develop
-python3 -m pip install -e .
+pip install swifter
 ```
