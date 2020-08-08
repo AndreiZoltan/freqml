@@ -54,7 +54,7 @@ def make_dataset(path, filename):
 def load_dataset(client,
                  pair='ETHUSDT',
                  days=1,
-                 path='/home/zoltan/github/freqml/freqtrade/user_data/data/binance',
+                 path='/home/zoltan/github/freqml/data/',
                  override=False):
     new_folder = path + '/' + pair + '_' + str(days)
     path_dir = "/".join(new_folder.split('/')[:-1])
