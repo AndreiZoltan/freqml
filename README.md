@@ -12,4 +12,7 @@ pip install -e .
 pip install ipykernel
 ipython kernel install --user --name=freqml
 pip install swifter
+pip install seaborn
+pip install scipy
+pip install python-binance
 ```
