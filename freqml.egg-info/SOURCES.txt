@@ -3,8 +3,6 @@ setup.py
 freqml/__init__.py
 freqml/bars.py
 freqml/data.py
-freqml/freqtrade_data.py
-freqml/json2csv.py
 freqml/tools.py
 freqml.egg-info/PKG-INFO
 freqml.egg-info/SOURCES.txt
