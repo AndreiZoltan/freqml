@@ -20,16 +20,22 @@ class Side:
             return self.current_side
 
 
-def clear(df):
+def process_dataset(df, use_swifter=True):
     df = df.rename(columns={"a": "id",
                             "p": "price",
                             "q": "amount",
                             "T": "timestamp"})
-    df["datetime"] = df.swifter.apply(lambda x: pd.to_datetime(x["timestamp"],
-                                                               unit='ms',
-                                                               utc=True).tz_convert('Europe/Chisinau'), axis=1)
+    if use_swifter:
+        df["datetime"] = df.swifter.apply(lambda x: pd.to_datetime(x["timestamp"],
+                                                                   unit='ms',
+                                                                   utc=True).tz_convert('Europe/Chisinau'), axis=1)
+    else:
+        df["datetime"] = df.apply(lambda x: pd.to_datetime(x["timestamp"],
+                                                           unit='ms',
+                                                           utc=True).tz_convert('Europe/Chisinau'), axis=1)
     s = Side(0)
     df["price"] = pd.to_numeric(df["price"])
+    df["amount"] = pd.to_numeric(df["amount"])
     df["side"] = df["price"].rolling(2).apply(lambda x: s.side(x), raw=True)
     df["cost"] = df["price"] * df["amount"]
     del df["f"]
@@ -39,15 +45,13 @@ def clear(df):
     return df.reset_index(drop=True)
 
 
-def make_dataset(path, filename):
+def gather_dataset(path):
     files = os.listdir(path)
     files = sorted(files)
     files = [str(path + '/' + f ) for f in files]
     df = pd.concat((pd.read_csv(f, index_col=0) for f in files), ignore_index=True)
     print("The data was loaded into RAM for further processing")
     df = df.dropna()
-    df = clear(df)
-    df.to_csv(filename)
     return df
 
 
@@ -55,7 +59,8 @@ def load_dataset(client,
                  pair='ETHUSDT',
                  days=1,
                  path='/home/zoltan/github/freqml/data/',
-                 override=False):
+                 override=False,
+                 use_swifter=True):
     new_folder = path + '/' + pair + '_' + str(days)
     path_dir = "/".join(new_folder.split('/')[:-1])
     name_csv = new_folder.split('/')[-1]
@@ -93,6 +98,8 @@ def load_dataset(client,
         else:
             start += step
     print("All data was downloaded")
-    df = make_dataset(new_folder, filename)
+    df = gather_dataset(new_folder)
+    df = process_dataset(df, use_swifter)
+    df.to_csv(filename)
     shutil.rmtree(new_folder)
     return df

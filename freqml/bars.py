@@ -52,7 +52,7 @@ class bars:
         fig.show()
 
 
-    def TIMEB(self, freq="5m"):
+    def TIMEB(self, freq="5min"):
         grouped = self._df.groupby(pd.Grouper(key='datetime', freq=freq))
         df_TIMEB = bars.make_bars(grouped)
         return df_TIMEB
