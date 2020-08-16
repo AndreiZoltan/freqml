@@ -58,8 +58,6 @@ class bars:
         if (end - start) % min != 0:
             self._df = self._df.loc[self._df['timestamp'] > ((end - start) // min)]
         grouped = self._df.groupby(np.floor(self._df['timestamp'] / min))
-        df_TIMEB = bars.make_bars(grouped)
-        return df_TIMEB
 
 
     def TB(self, m=100):
