@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+
+
 @pd.api.extensions.register_dataframe_accessor("bars")
 class bars:
     def __init__(self, df):
@@ -19,15 +21,24 @@ class bars:
 
     @property
     def period(self):
-        raise NotImplemented
-        #return self._df.loc[self._df.shape[0] - 1, "datetime"] - self._df.loc[0, "datetime"]
+        if 'timestamp' in self._df.columns:
+            start = self._df.iloc[0, self._df.columns.get_loc("timestamp")]
+            end = self._df.iloc[-1, self._df.columns.get_loc("timestamp")]
+            period = bars.stamp2time(end) - bars.stamp2time(start)
+            return period
+        else:
+            raise NotImplemented
 
-    #@staticmethod
+    @staticmethod
+    def stamp2time(timestamp):
+        return pd.to_datetime(timestamp, unit='ms', utc=True).tz_convert('Europe/Chisinau')
+
+    @staticmethod
     def make_bars(grouped):
         df = grouped["price"].ohlc()
         df["amount"] = grouped["amount"].sum()
         df["VWAP"] = grouped["cost"].sum() / df["amount"]
-        df = df.set_index(grouped["datetime"].nth(-1))
+        df = df.set_index((grouped["timestamp"].nth(-1)).apply(bars.stamp2time))
         return df
 
     def plot(self, title="bars", pair="PAIR"):
@@ -57,10 +68,8 @@ class bars:
         start = self._df.iloc[0, self._df.columns.get_loc("timestamp")]
         end = self._df.iloc[-1, self._df.columns.get_loc("timestamp")]
         if (end - start) % minutes != 0:
-            print(self._df.shape)
             full_minutes = ((end - start) // minutes) * minutes
             self._df = self._df.loc[self._df['timestamp'] < full_minutes + start]
-            print(self._df.shape)
         grouped = self._df.groupby(np.floor((self._df['timestamp'] - start) / minutes))
         df_TIMEB = bars.make_bars(grouped)
         return df_TIMEB
@@ -138,11 +147,10 @@ class bars:
         return df_DIB
 
     def TRB(self):
-        pass
+        raise NotImplemented
 
     def VRB(self):
-        pass
+        raise NotImplemented
 
     def DRB(self):
-        pass
-
+        raise NotImplemented

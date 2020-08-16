@@ -20,20 +20,12 @@ class Side:
             return self.current_side
 
 
-def process_dataset(df, use_swifter=True):
+def process_dataset(df):
     df = df.rename(columns={"a": "id",
                             "p": "price",
                             "q": "amount",
                             "T": "timestamp"})
-    if use_swifter:
-        df["datetime"] = df.swifter.apply(lambda x: pd.to_datetime(x["timestamp"],
-                                                                   unit='ms',
-                                                                   utc=True).tz_convert('Europe/Chisinau'), axis=1)
-    else:
-        df["datetime"] = df.apply(lambda x: pd.to_datetime(x["timestamp"],
-                                                           unit='ms',
-                                                           utc=True).tz_convert('Europe/Chisinau'), axis=1)
-    s = Side(0)datetime
+    s = Side(0)
     df["price"] = pd.to_numeric(df["price"])
     df["amount"] = pd.to_numeric(df["amount"])
     df["side"] = df["price"].rolling(2).apply(lambda x: s.side(x), raw=True)
@@ -59,8 +51,7 @@ def load_dataset(client,
                  pair='ETHUSDT',
                  days=1,
                  path='/home/zoltan/github/freqml/data/',
-                 override=False,
-                 use_swifter=True):
+                 override=False):
     new_folder = path + '/' + pair + '_' + str(days)
     path_dir = "/".join(new_folder.split('/')[:-1])
     name_csv = new_folder.split('/')[-1]
@@ -70,13 +61,11 @@ def load_dataset(client,
                   'price': 'float',
                   'amount': 'float',
                   'timestamp': 'long',
-                  'datetime': 'str',
                   'side': 'float',
                   'cost': 'float'}
         df = pd.read_csv(filename,
                          index_col=0,
-                         dtype=dtypes,
-                         parse_dates=['datetime'])
+                         dtype=dtypes)
         return df
     if os.path.exists(new_folder):
         shutil.rmtree(new_folder)
@@ -99,7 +88,7 @@ def load_dataset(client,
             start += step
     print("All data was downloaded")
     df = gather_dataset(new_folder)
-    df = process_dataset(df, use_swifter)
+    df = process_dataset(df)
     df.to_csv(filename)
     shutil.rmtree(new_folder)
     return df
