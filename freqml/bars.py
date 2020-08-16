@@ -51,9 +51,13 @@ class bars:
 
         fig.show()
 
-
-    def TIMEB(self, freq="5m"):
-        grouped = self._df.groupby(pd.Grouper(key='datetime', freq=freq))
+    def TIMEB(self, min=5):
+        min *= 1000*1000*1000*60
+        start = self._df.iloc[0, self._df.columns.get_loc("timestamp")]
+        end = self._df.iloc[-1, self._df.columns.get_loc("timestamp")]
+        if (end - start) % min != 0:
+            self._df = self._df.loc[self._df['timestamp'] > ((end - start) // min)]
+        grouped = self._df.groupby(np.floor(self._df['timestamp'] / min))
         df_TIMEB = bars.make_bars(grouped)
         return df_TIMEB
 
