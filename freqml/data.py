@@ -33,7 +33,7 @@ def process_dataset(df, use_swifter=True):
         df["datetime"] = df.apply(lambda x: pd.to_datetime(x["timestamp"],
                                                            unit='ms',
                                                            utc=True).tz_convert('Europe/Chisinau'), axis=1)
-    s = Side(0)
+    s = Side(0)datetime
     df["price"] = pd.to_numeric(df["price"])
     df["amount"] = pd.to_numeric(df["amount"])
     df["side"] = df["price"].rolling(2).apply(lambda x: s.side(x), raw=True)

@@ -19,7 +19,8 @@ class bars:
 
     @property
     def period(self):
-        return self._df.loc[self._df.shape[0] - 1, "datetime"] - self._df.loc[0, "datetime"]
+        raise NotImplemented
+        #return self._df.loc[self._df.shape[0] - 1, "datetime"] - self._df.loc[0, "datetime"]
 
     #@staticmethod
     def make_bars(grouped):
@@ -51,13 +52,18 @@ class bars:
 
         fig.show()
 
-    def TIMEB(self, min=5):
-        min *= 1000*1000*1000*60
+    def TIMEB(self, minutes=5):
+        minutes *= 1000 * 60
         start = self._df.iloc[0, self._df.columns.get_loc("timestamp")]
         end = self._df.iloc[-1, self._df.columns.get_loc("timestamp")]
-        if (end - start) % min != 0:
-            self._df = self._df.loc[self._df['timestamp'] > ((end - start) // min)]
-        grouped = self._df.groupby(np.floor(self._df['timestamp'] / min))
+        if (end - start) % minutes != 0:
+            print(self._df.shape)
+            full_minutes = ((end - start) // minutes) * minutes
+            self._df = self._df.loc[self._df['timestamp'] < full_minutes + start]
+            print(self._df.shape)
+        grouped = self._df.groupby(np.floor((self._df['timestamp'] - start) / minutes))
+        df_TIMEB = bars.make_bars(grouped)
+        return df_TIMEB
 
 
     def TB(self, m=100):
