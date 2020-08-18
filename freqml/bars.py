@@ -83,9 +83,9 @@ class bars:
         return df_TB
 
     def VB(self, v=5000):
-        self._df.loc[:, "amount_cumsum"] = self._df["amount"].cumsum()
+        self._df.loc[:, "amount_cumsum"] = self._df.loc[:, "amount"].cumsum()
         df_VB = self._df.loc[self._df["amount_cumsum"] <= np.floor(self.volume - (self.volume % v))]
-        grouped = df_VB.groupby(np.floor(df_VB["amount_cumsum"] / v))
+        grouped = df_VB.groupby(np.floor(df_VB.loc[:, "amount_cumsum"] / v))
         del self._df["amount_cumsum"]
         df_VB = bars.make_bars(grouped)
         return df_VB
@@ -93,7 +93,7 @@ class bars:
     def DB(self, d=10000):
         self._df.loc[:, "cost_cumsum"] = self._df["cost"].cumsum()
         df_DB = self._df.loc[self._df["cost_cumsum"] <= np.floor(self.dvolume - (self.dvolume % d))]
-        grouped = df_DB.groupby(np.floor(df_DB["cost_cumsum"] / d))
+        grouped = df_DB.groupby(np.floor(df_DB.loc[:, "cost_cumsum"] / d))
         del self._df["cost_cumsum"]
         df_DB = bars.make_bars(grouped)
         return df_DB
