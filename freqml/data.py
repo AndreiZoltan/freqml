@@ -41,7 +41,6 @@ def gather_dataset(path):
     files = sorted(files)
     files = [str(path + '/' + f ) for f in files]
     df = pd.concat((pd.read_csv(f, index_col=0) for f in files), ignore_index=True)
-    print("The data was loaded into RAM for further processing")
     df = df.dropna()
     return df
 
@@ -85,7 +84,6 @@ def load_dataset(client,
                 break
         else:
             start += step
-    print("All data was downloaded")
     df = gather_dataset(new_folder)
     df = process_dataset(df)
     df.to_csv(filename)
