@@ -39,8 +39,8 @@ class bars:
     @staticmethod
     def make_bars(grouped):
         df = grouped["price"].ohlc()
-        df["amount"] = grouped["amount"].sum()
-        df["VWAP"] = grouped["cost"].sum() / df["amount"]
+        df["volume"] = grouped["amount"].sum()
+        df["VWAP"] = grouped["cost"].sum() / df["volume"]
         df = df.set_index((grouped["timestamp"].nth(-1)).apply(bars.stamp2time))
         return df
 
